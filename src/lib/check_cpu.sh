@@ -7,6 +7,7 @@
 function check_cpu {
 
 	local timestamp=$(date +%s)
+	local alert_msg
 
 	# CHECK vars
 	for var in SENSORS_JSON CPU_ABOVE_WARN_THRESH; do
@@ -44,10 +45,13 @@ function check_cpu {
 
 	# CHECK critical
 	if (( cpu_crit != 0 && cpu_input >= cpu_crit )); then
-		ALERT_MSG+="Critical CPU Temperature reached!\n"
-		ALERT_MSG+="Critical: ${cpu_crit}\n"
-		ALERT_MSG+="Current: ${cpu_input}\n"
-		ALERT_MSG+="---\n"
+		alert_msg=""
+		alert_msg+="Critical CPU Temperature reached!\n"
+		alert_msg+="Critical: ${cpu_crit}°C\n"
+		alert_msg+="Current: ${cpu_input}°C\n\n"
+
+		log "<3> ${alert_msg}"
+		ALERT_MSG+="${alert_msg}\n"
 	fi
 
 	# CHECK maximum warning limit (sustained tracking)
@@ -65,12 +69,15 @@ function check_cpu {
 			if (( seconds_above_max > CPU_ABOVE_WARN_THRESH )); then
 				# ONLY alert if we haven't already fired an alert for this specific breach event
 				if (( cpu_alert_fired == 0 )); then
-					ALERT_MSG+="[WARNING] Sustained High CPU Temperature Detected!\n"
-					ALERT_MSG+="Warning Limit: ${cpu_max}°C\n"
-					ALERT_MSG+="Current Reading: ${cpu_input}°C\n"
-					ALERT_MSG+="Sustained for: ${seconds_above_max} seconds\n"
-					ALERT_MSG+="---\n"
+					alert_msg=""
+					alert_msg+="[WARNING] Sustained High CPU Temperature Detected!\n"
+					alert_msg+="Warning: ${cpu_max}°C\n"
+					alert_msg+="Current: ${cpu_input}°C\n"
+					alert_msg+="Sustained for: ${seconds_above_max} seconds\n\n"
 					
+					log "<3> ${alert_msg}"
+					ALERT_MSG+="${alert_msg}\n"
+
 					# Mark that we alerted, but KEEP the original timestamp intact
 					set_state "${cpu_key}" "cpu_alert_fired" 1
 				fi
