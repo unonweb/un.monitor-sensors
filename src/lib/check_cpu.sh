@@ -46,7 +46,7 @@ function check_cpu {
 	# CHECK critical
 	if (( cpu_crit != 0 && cpu_input >= cpu_crit )); then
 		alert_msg=""
-		alert_msg+="Critical CPU Temperature reached!\n"
+		alert_msg+="[Critical] CPU overheating!\n"
 		alert_msg+="Critical: ${cpu_crit}°C\n"
 		alert_msg+="Current: ${cpu_input}°C\n\n"
 
@@ -73,7 +73,8 @@ function check_cpu {
 					alert_msg+="[WARNING] Sustained High CPU Temperature Detected!\n"
 					alert_msg+="Warning: ${cpu_max}°C\n"
 					alert_msg+="Current: ${cpu_input}°C\n"
-					alert_msg+="Sustained for: ${seconds_above_max} seconds\n\n"
+					alert_msg+="Sustained for: ${seconds_above_max} seconds\n"
+					alert_msg+="Sustain threshold: ${CPU_ABOVE_WARN_THRESH} seconds\n\n"
 					
 					log "<3> ${alert_msg}"
 					ALERT_MSG+="${alert_msg}\n"

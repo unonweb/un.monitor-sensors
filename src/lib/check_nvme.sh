@@ -42,7 +42,7 @@ function check_nvme {
 		if (( nvme_crit != 0 && nvme_input >= nvme_crit )); then
 			alert_msg=""
 			alert_msg+="[CRITICAL] NVMe SSD Overheating!\n"
-			alert_msg+="Key: ${nvme_key}"
+			alert_msg+="Key: ${nvme_key}\n"
 			alert_msg+="Critical: ${nvme_crit}°C\n"
 			alert_msg+="Current: ${nvme_input}°C\n\n"
 
@@ -69,10 +69,11 @@ function check_nvme {
 
 						alert_msg=""
 						alert_msg+="[WARNING] Sustained High NVME Temperature Detected!\n"
-						alert_msg+="Key: ${nvme_key}"
+						alert_msg+="Key: ${nvme_key}\n"
 						alert_msg+="Warning: ${nvme_max}°C\n"
 						alert_msg+="Current: ${nvme_input}°C\n"
-						alert_msg+="Sustained for: ${seconds_above_max} seconds\n\n"
+						alert_msg+="Sustained for: ${seconds_above_max} seconds\n"
+						alert_msg+="Sustain threshold: ${NVME_ABOVE_WARN_THRESH} seconds\n\n"
 
 						log "<3> ${alert_msg}"
 			
