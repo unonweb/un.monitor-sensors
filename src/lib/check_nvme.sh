@@ -2,8 +2,17 @@
 # ========
 # - SENSORS_JSON
 # - ALERT_MSG
+# - NVME_ABOVE_WARN_THRESH
 
 function check_nvme {
+
+	# CHECK vars
+	for var in SENSORS_JSON NVME_ABOVE_WARN_THRESH; do
+		if [[ -z "${!var}" ]]; then
+			log "<3> Required var missing: ${var}"
+			exit 1
+		fi
+	done
 
 	local timestamp=$(date +%s)
 	local nvme_keys=()
@@ -48,7 +57,7 @@ function check_nvme {
 			if (( nvme_above_max_timestamp > 0 )); then
 				local seconds_above_max=$(( timestamp - nvme_above_max_timestamp ))
 				
-				if (( seconds_above_max > CPU_ABOVE_WARN_THRESH )); then
+				if (( seconds_above_max > NVME_ABOVE_WARN_THRESH )); then
 					# ONLY alert if we haven't already fired an alert for this specific breach event
 					if (( nvme_alert_fired == 0 )); then
 						ALERT_MSG+="[WARNING] Sustained High NVME Temperature Detected!\n"
