@@ -13,7 +13,8 @@ function check_nvme {
 			exit 1
 		fi
 	done
-
+	
+	local alert_msg
 	local timestamp=$(date +%s)
 	local nvme_keys=()
 	mapfile -t nvme_keys < <(echo "${SENSORS_JSON}" | jq -r 'keys[] | select(startswith("nvme-"))')
@@ -39,10 +40,15 @@ function check_nvme {
 
 		# CHECK NVMe absolute critical limit
 		if (( nvme_crit != 0 && nvme_input >= nvme_crit )); then
-			ALERT_MSG+="[CRITICAL] NVMe SSD Overheating: ${nvme_key}\n"
-			ALERT_MSG+="Critical Threshold: ${nvme_crit}°C\n"
-			ALERT_MSG+="Current Reading: ${nvme_input}°C\n"
-			ALERT_MSG+="---\n"
+			alert_msg=""
+			alert_msg+="[CRITICAL] NVMe SSD Overheating: ${nvme_key}\n"
+			alert_msg+="Critical Threshold: ${nvme_crit}°C\n"
+			alert_msg+="Current Reading: ${nvme_input}°C\n"
+			alert_msg+="---\n"
+
+			log "<3> ${alert_msg}"
+			
+			ALERT_MSG+="${alert_msg}\n"
 		fi
 
 		# CHECK maximum warning limit (sustained tracking)
@@ -60,11 +66,17 @@ function check_nvme {
 				if (( seconds_above_max > NVME_ABOVE_WARN_THRESH )); then
 					# ONLY alert if we haven't already fired an alert for this specific breach event
 					if (( nvme_alert_fired == 0 )); then
-						ALERT_MSG+="[WARNING] Sustained High NVME Temperature Detected!\n"
-						ALERT_MSG+="Warning Limit: ${nvme_max}°C\n"
-						ALERT_MSG+="Current Reading: ${nvme_input}°C\n"
-						ALERT_MSG+="Sustained for: ${seconds_above_max} seconds\n"
-						ALERT_MSG+="---\n"
+
+						alert_msg=""
+						alert_msg+="[WARNING] Sustained High NVME Temperature Detected!\n"
+						alert_msg+="Warning Limit: ${nvme_max}°C\n"
+						alert_msg+="Current Reading: ${nvme_input}°C\n"
+						alert_msg+="Sustained for: ${seconds_above_max} seconds\n"
+						alert_msg+="---\n"
+
+						log "<3> ${alert_msg}"
+			
+						ALERT_MSG+="${alert_msg}\n"
 						
 						# Mark that we alerted, but KEEP the original timestamp intact
 						set_state "${nvme_key}" "nvme_alert_fired" 1
