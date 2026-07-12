@@ -2,10 +2,19 @@
 # ========
 # - SENSORS_JSON
 # - ALERT_MSG
+# - CPU_ABOVE_WARN_THRESH
 
 function check_cpu {
 
 	local timestamp=$(date +%s)
+
+	# CHECK vars
+	for var in SENSORS_JSON CPU_ABOVE_WARN_THRESH; do
+		if [[ -z "${!var}" ]]; then
+			log "<3> Required var missing: ${var}"
+			exit 1
+		fi
+	done
 
 	# GET cpu_key
 	# Use the key starting with 'coretemp-isa'
