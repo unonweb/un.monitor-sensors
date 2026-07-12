@@ -37,14 +37,14 @@ function check_nvme {
 			log "<3> Could not read one of 'input', 'max' and 'crit' from ${nvme_key}"
 			continue
 		fi
-
+		
 		# CHECK NVMe absolute critical limit
 		if (( nvme_crit != 0 && nvme_input >= nvme_crit )); then
 			alert_msg=""
-			alert_msg+="[CRITICAL] NVMe SSD Overheating: ${nvme_key}\n"
+			alert_msg+="[CRITICAL] NVMe SSD Overheating!\n"
+			alert_msg+="NVME key: ${nvme_key}"
 			alert_msg+="Critical Threshold: ${nvme_crit}°C\n"
-			alert_msg+="Current Reading: ${nvme_input}°C\n"
-			alert_msg+="---\n"
+			alert_msg+="Current Reading: ${nvme_input}°C\n\n"
 
 			log "<3> ${alert_msg}"
 			
