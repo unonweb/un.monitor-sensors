@@ -91,7 +91,7 @@ function check_cpu {
 	else
 		# Temperature dropped back to safe levels! 
 		# Reset everything completely
-		log "<7> Temperature of ${cpu_key} at safe levels: ${cpu_input}"
+		log "<6> Temperature of ${cpu_key} at safe levels: ${cpu_input}"
 		set_state "${cpu_key}" "cpu_above_max_timestamp" 0
 		set_state "${cpu_key}" "cpu_alert_fired" 0
 	fi
