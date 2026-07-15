@@ -91,7 +91,7 @@ function check_nvme {
 		else
 			# Temperature dropped back to safe levels! 
 			# Reset everything completely
-			log "<7> Temperature of ${nvme_key} at safe levels: ${nvme_input}"
+			log "<6> Temperature of ${nvme_key} at safe levels: ${nvme_input}"
 			set_state "${nvme_key}" "nvme_above_max_timestamp" 0
 			set_state "${nvme_key}" "nvme_alert_fired" 0
 		fi
